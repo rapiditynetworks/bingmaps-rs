@@ -90,12 +90,16 @@ impl FindPoint {
     }
 }
 
+// TODO: Maybe use references to ContextParams, instead of the full thing? --- or implement Copy/Clone
 #[derive(Default, Serialize)]
 pub struct ContextParams {
     pub culture: Option<CultureCode>,
-    pub user_map_view: Option<Vec<f64>>,
-    pub user_location: Option<Vec<f64>>,
-    pub user_ip: Option<String>,
+    pub user_map_view: Option<Vec<f64>>, // TODO: Define a struct
+    pub user_location: Option<Vec<f64>>, // TODO: Define a struct
+    pub user_ip: Option<String>, // TODO: maybe just use &str?
+
+    // TODO: Convert user_region to enum of ISO 3166-2
+    // See https://en.wikipedia.org/wiki/ISO_3166-2
     pub user_region: Option<String>,
 }
 
