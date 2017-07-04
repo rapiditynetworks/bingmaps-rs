@@ -22,9 +22,12 @@ pub enum EntityType {
     AdminDivision2,
     CountryRegion,
 
+
+    Postcode2, // missing in MSDN documentation, but exists in the wild
+    RoadBlock, // missing in MSDN documentation, but exists in the wild
+    Park, // missing in MSDN documentation, but exists in the wild
     Lake, // missing in MSDN documentation, but exists in the wild
     River, // missing in MSDN documentation, but exists in the wild
-    Postcode2, // missing in MSDN documentation, but exists in the wild
 }
 
 #[derive(Debug, Deserialize)]
