@@ -12,6 +12,7 @@ pub struct Point {
     pub coordinates: Vec<f64>,
 }
 
+// TODO: Check with Microsoft Devs, but probably just make this a string-- not an enum
 #[derive(Debug, Deserialize, Serialize, PartialEq, Clone, Copy)]
 pub enum EntityType {
     Address,
@@ -22,12 +23,13 @@ pub enum EntityType {
     AdminDivision2,
     CountryRegion,
 
-
-    Postcode2, // missing in MSDN documentation, but exists in the wild
-    RoadBlock, // missing in MSDN documentation, but exists in the wild
-    Park, // missing in MSDN documentation, but exists in the wild
-    Lake, // missing in MSDN documentation, but exists in the wild
-    River, // missing in MSDN documentation, but exists in the wild
+    // Missing in MSDN documentation, but exists in the wild
+    Postcode2,
+    RoadBlock,
+    HigherEducationFacility,
+    Park,
+    Lake,
+    River,
 }
 
 #[derive(Debug, Deserialize)]
