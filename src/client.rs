@@ -2,6 +2,7 @@ use error::{Error, RequestError};
 use hyper::Client as HttpClient;
 use hyper::client::RequestBuilder;
 use hyper::net::HttpsConnector;
+use hyper_rustls::TlsClient;
 use serde;
 use serde_json as json;
 use serde_qs as qs;
@@ -21,11 +22,8 @@ impl Client {
         format!("https://dev.virtualearth.net/REST/v1/{}?{}", path, query)
     }
 
-    #[cfg(feature = "with-native-tls")]
     pub fn new(key: &str) -> Client {
-        use hyper_native_tls::NativeTlsClient;
-
-        let tls = NativeTlsClient::new().unwrap();
+        let tls = TlsClient::new();
         let connector = HttpsConnector::new(tls);
         let client = HttpClient::with_connector(connector);
         Client {
@@ -34,20 +32,7 @@ impl Client {
         }
     }
 
-    #[cfg(feature = "with-openssl")]
-    pub fn new(key: &str) -> Client {
-        use hyper_openssl::OpensslClient;
-
-        let tls = NativeTlsClient::new().unwrap();
-        let connector = HttpsConnector::new(tls);
-        let client = HttpClient::with_connector(connector);
-        Client {
-            client: client,
-            key: key.to_owned(),
-        }
-    }
-
-    pub fn get<'a, T: serde::Deserialize>(&'a self, path: &'a str, params: &mut Params<'a>) -> Result<T, Error> {
+    pub fn get<'a, T: serde::de::DeserializeOwned>(&'a self, path: &'a str, params: &mut Params<'a>) -> Result<T, Error> {
         params.insert("key", &self.key);
         let url = Client::url(path, &params);
         let request = self.client.get(&url);
@@ -55,7 +40,7 @@ impl Client {
     }
 }
 
-fn send<T: serde::Deserialize>(request: RequestBuilder) -> Result<T, Error> {
+fn send<T: serde::de::DeserializeOwned>(request: RequestBuilder) -> Result<T, Error> {
     let mut response = request.send()?;
     let mut body = String::with_capacity(4096);
     response.read_to_string(&mut body)?;

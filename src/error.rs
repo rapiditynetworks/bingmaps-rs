@@ -1,6 +1,6 @@
 use hyper;
 use serde_json as json;
-use serde_qs::ser as qs;
+use serde_qs as qs;
 use std::error;
 use std::fmt;
 use std::io;
@@ -15,7 +15,7 @@ pub enum Error {
     /// An error reading the response body.
     Io(io::Error),
     /// An error converting between wire format and Rust types.
-    Conversion(Box<error::Error + Sync + Send>),
+    Conversion(Box<error::Error + Send>),
 }
 
 impl fmt::Display for Error {

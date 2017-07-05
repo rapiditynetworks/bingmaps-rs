@@ -1,7 +1,5 @@
-use serde;
-
 #[derive(Deserialize)]
-pub struct Response<T: serde::Deserialize> {
+pub struct Response<T> {
     // #[serde(rename = "authenticationResultCode")]
     // pub authentication_result: String,
 
@@ -22,7 +20,7 @@ pub struct Response<T: serde::Deserialize> {
 }
 
 #[derive(Deserialize)]
-pub struct ResourceSet<T: serde::Deserialize> {
+pub struct ResourceSet<T> {
     // #[serde(rename = "estimatedTotal")]
     // pub estimated_total: i64,
 
