@@ -2,7 +2,7 @@ use common::CultureCode;
 use client::Client;
 use error::Error;
 use response::Response;
-use serde_qs as qs;
+use serde_urlencoded as urlencoded;
 use std::collections::HashMap;
 
 // TODO: Maybe use a GeoJson crate here
@@ -142,7 +142,7 @@ impl Location {
         }
         if let Some(ref ctx) = opts {
             if let Some(ref c) = ctx.culture {
-                culture = qs::to_string(&c).map_err(|err| Error::from(err))?;
+                culture = urlencoded::to_string(&c).map_err(|err| Error::from(err))?;
                 params.insert("c", &culture);
             }
             if let Some(ref umv) = ctx.user_map_view {
@@ -176,7 +176,7 @@ impl Location {
         params.insert("q", query);
         if let Some(ref ctx) = opts {
             if let Some(ref c) = ctx.culture {
-                culture = qs::to_string(&c).map_err(|err| Error::from(err))?;
+                culture = urlencoded::to_string(&c).map_err(|err| Error::from(err))?;
                 params.insert("c", &culture);
             }
             if let Some(ref umv) = ctx.user_map_view {

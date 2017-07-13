@@ -31,7 +31,7 @@ use bingmaps::locations::{Location, FindPoint, EntityType, Confidence, MatchCode
 use std::env;
 
 let key = env::var("BING_MAPS_KEY").unwrap();
-let client = bingmaps::Client::new();
+let client = bingmaps::Client::new(key);
 
 // Find a Location by search-term / query
 let locations = Location::find_by_query(&client, "Times Square, New York", None).unwrap();
