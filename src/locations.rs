@@ -30,6 +30,7 @@ pub enum EntityType {
     Park,
     Lake,
     River,
+    Airport,
 }
 
 #[derive(Debug, Deserialize)]
