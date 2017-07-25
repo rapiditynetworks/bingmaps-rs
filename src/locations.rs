@@ -6,7 +6,7 @@ use serde_urlencoded as urlencoded;
 use std::collections::HashMap;
 
 // TODO: Implement custom serialize/deserialize for Array to Struct mapping
-type LatLng = (f64, f64);
+pub type LatLng = (f64, f64);
 // TODO: Use rectangle type
 // type SouthWestNorthEast = (f64, f64, f64, f64);
 
