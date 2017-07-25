@@ -5,11 +5,12 @@ use response::Response;
 use serde_urlencoded as urlencoded;
 use std::collections::HashMap;
 
-// NOTE: Not GeoJSON, points are "LatLng" not "LngLat"
-#[derive(Debug, Deserialize)]
+// NOTE: Not GeoJSON, points are "(Lat, Lng)" not "(Lng, Lat)"
+#[derive(Debug, Deserialize, Serialize)]
 pub struct Point {
     // pub type: String // <-- Always Point for Location
-    pub coordinates: Vec<f64>,
+    #[serde(rename = "coordinates")]
+    pub latlng: (f64, f64),
 }
 
 // TODO: Check with Microsoft Devs, but probably just make this a string-- not an enum
@@ -204,5 +205,22 @@ impl Location {
         } else {
             Ok(Vec::new())
         }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use serde_json as json;
+    use super::Point;
+
+    #[test]
+    fn serialize_deserialize_point() {
+        let example = r#"{"coordinates":[39.739763,-104.987068]}"#;
+
+        let point: Point = json::from_str(example).unwrap();
+        assert_eq!(format!("{:?}", point), "Point { latlng: (39.739763, -104.987068) }");
+
+        let ser = json::to_string(&point).unwrap();
+        assert_eq!(ser, example);
     }
 }
