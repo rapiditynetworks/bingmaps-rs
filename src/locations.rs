@@ -5,7 +5,7 @@ use response::Response;
 use serde_urlencoded as urlencoded;
 use std::collections::HashMap;
 
-// TODO: Maybe use a GeoJson crate here
+// NOTE: Not GeoJSON, points are "LatLng" not "LngLat"
 #[derive(Debug, Deserialize)]
 pub struct Point {
     // pub type: String // <-- Always Point for Location
@@ -25,12 +25,16 @@ pub enum EntityType {
 
     // Missing in MSDN documentation, but exists in the wild
     Postcode2,
+    Postcode3,
     RoadBlock,
+    RoadIntersection,
     HigherEducationFacility,
+    Stadium,
+    Airport,
     Park,
     Lake,
     River,
-    Airport,
+    Island,
 }
 
 #[derive(Debug, Deserialize)]
