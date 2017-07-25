@@ -44,7 +44,7 @@ println!("{:#?}", locations.next().unwrap());
 /*
 Location {
     name: "1551 7th Ave, New York, NY 10036",
-    point: Point {coordinates: [40.75891, -73.98546]},
+    point: Point { latlng: (40.75891, -73.98546) },
     bbox: [40.75504728242933, -73.9922589957156, 40.76277271757068, -73.9786610042844],
     entity_type: Address,
     address: Address {
