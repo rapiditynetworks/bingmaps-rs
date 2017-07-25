@@ -5,12 +5,17 @@ use response::Response;
 use serde_urlencoded as urlencoded;
 use std::collections::HashMap;
 
+// TODO: Implement custom serialize/deserialize for Array to Struct mapping
+type LatLng = (f64, f64);
+// TODO: Use rectangle type
+// type SouthWestNorthEast = (f64, f64, f64, f64);
+
 // NOTE: Not GeoJSON, points are "(Lat, Lng)" not "(Lng, Lat)"
 #[derive(Debug, Deserialize, Serialize)]
 pub struct Point {
     // pub type: String // <-- Always Point for Location
     #[serde(rename = "coordinates")]
-    pub latlng: (f64, f64),
+    pub latlng: LatLng,
 }
 
 // TODO: Check with Microsoft Devs, but probably just make this a string-- not an enum
@@ -101,7 +106,7 @@ impl FindPoint {
 pub struct ContextParams {
     pub culture: Option<CultureCode>,
     pub user_map_view: Option<Vec<f64>>, // TODO: Define a struct
-    pub user_location: Option<Vec<f64>>, // TODO: Define a struct
+    pub user_location: Option<LatLng>, // TODO: Define a struct
     pub user_ip: Option<String>, // TODO: maybe just use &str?
 
     // TODO: Convert user_region to enum of ISO 3166-2
@@ -156,7 +161,7 @@ impl Location {
                 params.insert("umv", &user_map_view);
             }
             if let Some(ref ul) = ctx.user_location {
-                user_location = ul.iter().map(|n| n.to_string()).collect::<Vec<String>>().join(",");
+                user_location = format!("{},{}", ul.0, ul.1);
                 params.insert("ul", &user_location);
             }
             if let Some(ref uip) = ctx.user_ip { params.insert("uip", &uip); }
@@ -190,7 +195,7 @@ impl Location {
                 params.insert("umv", &user_map_view);
             }
             if let Some(ref ul) = ctx.user_location {
-                user_location = ul.iter().map(|n| n.to_string()).collect::<Vec<String>>().join(",");
+                user_location = format!("{},{}", ul.0, ul.1);
                 params.insert("ul", &user_location);
             }
             if let Some(ref uip) = ctx.user_ip { params.insert("uip", &uip); }
