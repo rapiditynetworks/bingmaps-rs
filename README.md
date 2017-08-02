@@ -15,7 +15,7 @@ Put this in your `Cargo.toml`:
 
 ```toml
 [dependencies]
-bingmaps = "0.0.3"
+bingmaps = "0.4.0"
 ```
 
 And this in your crate root:
