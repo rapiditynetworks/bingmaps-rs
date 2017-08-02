@@ -2,14 +2,20 @@ use common::CultureCode;
 use client::Client;
 use error::Error;
 use response::Response;
-use serde_qs as qs;
+use serde_urlencoded as urlencoded;
 use std::collections::HashMap;
 
-// TODO: Maybe use a GeoJson crate here
-#[derive(Debug, Deserialize)]
+// TODO: Implement custom serialize/deserialize for Array to Struct mapping
+pub type LatLng = (f64, f64);
+// TODO: Use rectangle type
+// type SouthWestNorthEast = (f64, f64, f64, f64);
+
+// NOTE: Not GeoJSON, points are "(Lat, Lng)" not "(Lng, Lat)"
+#[derive(Debug, Deserialize, Serialize)]
 pub struct Point {
     // pub type: String // <-- Always Point for Location
-    pub coordinates: Vec<f64>,
+    #[serde(rename = "coordinates")]
+    pub latlng: LatLng,
 }
 
 // TODO: Check with Microsoft Devs, but probably just make this a string-- not an enum
@@ -25,11 +31,16 @@ pub enum EntityType {
 
     // Missing in MSDN documentation, but exists in the wild
     Postcode2,
+    Postcode3,
     RoadBlock,
+    RoadIntersection,
     HigherEducationFacility,
+    Stadium,
+    Airport,
     Park,
     Lake,
     River,
+    Island,
 }
 
 #[derive(Debug, Deserialize)]
@@ -95,7 +106,7 @@ impl FindPoint {
 pub struct ContextParams {
     pub culture: Option<CultureCode>,
     pub user_map_view: Option<Vec<f64>>, // TODO: Define a struct
-    pub user_location: Option<Vec<f64>>, // TODO: Define a struct
+    pub user_location: Option<LatLng>, // TODO: Define a struct
     pub user_ip: Option<String>, // TODO: maybe just use &str?
 
     // TODO: Convert user_region to enum of ISO 3166-2
@@ -142,7 +153,7 @@ impl Location {
         }
         if let Some(ref ctx) = opts {
             if let Some(ref c) = ctx.culture {
-                culture = qs::to_string(&c).map_err(|err| Error::from(err))?;
+                culture = urlencoded::to_string(&c).map_err(|err| Error::from(err))?;
                 params.insert("c", &culture);
             }
             if let Some(ref umv) = ctx.user_map_view {
@@ -150,7 +161,7 @@ impl Location {
                 params.insert("umv", &user_map_view);
             }
             if let Some(ref ul) = ctx.user_location {
-                user_location = ul.iter().map(|n| n.to_string()).collect::<Vec<String>>().join(",");
+                user_location = format!("{},{}", ul.0, ul.1);
                 params.insert("ul", &user_location);
             }
             if let Some(ref uip) = ctx.user_ip { params.insert("uip", &uip); }
@@ -176,7 +187,7 @@ impl Location {
         params.insert("q", query);
         if let Some(ref ctx) = opts {
             if let Some(ref c) = ctx.culture {
-                culture = qs::to_string(&c).map_err(|err| Error::from(err))?;
+                culture = urlencoded::to_string(&c).map_err(|err| Error::from(err))?;
                 params.insert("c", &culture);
             }
             if let Some(ref umv) = ctx.user_map_view {
@@ -184,7 +195,7 @@ impl Location {
                 params.insert("umv", &user_map_view);
             }
             if let Some(ref ul) = ctx.user_location {
-                user_location = ul.iter().map(|n| n.to_string()).collect::<Vec<String>>().join(",");
+                user_location = format!("{},{}", ul.0, ul.1);
                 params.insert("ul", &user_location);
             }
             if let Some(ref uip) = ctx.user_ip { params.insert("uip", &uip); }
@@ -199,5 +210,22 @@ impl Location {
         } else {
             Ok(Vec::new())
         }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use serde_json as json;
+    use super::Point;
+
+    #[test]
+    fn serialize_deserialize_point() {
+        let example = r#"{"coordinates":[39.739763,-104.987068]}"#;
+
+        let point: Point = json::from_str(example).unwrap();
+        assert_eq!(format!("{:?}", point), "Point { latlng: (39.739763, -104.987068) }");
+
+        let ser = json::to_string(&point).unwrap();
+        assert_eq!(ser, example);
     }
 }

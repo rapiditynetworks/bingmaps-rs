@@ -2,10 +2,9 @@ use error::{Error, RequestError};
 use hyper::Client as HttpClient;
 use hyper::client::RequestBuilder;
 use hyper::net::HttpsConnector;
-use hyper_rustls::TlsClient;
 use serde;
 use serde_json as json;
-use serde_qs as qs;
+use serde_urlencoded as urlencoded;
 use std::collections::HashMap;
 use std::io::Read;
 
@@ -18,18 +17,28 @@ pub struct Client {
 
 impl Client {
     fn url(path: &str, params: &Params) -> String {
-        let query = qs::to_string(params).unwrap_or(String::from(""));
+        let query = urlencoded::to_string(params).unwrap_or(String::from(""));
         format!("https://dev.virtualearth.net/REST/v1/{}?{}", path, query)
     }
 
-    pub fn new(key: &str) -> Client {
+    #[cfg(feature = "with-rustls")]
+    pub fn new<Str: Into<String>>(key: Str) -> Client {
+        use hyper_rustls::TlsClient;
+
         let tls = TlsClient::new();
         let connector = HttpsConnector::new(tls);
         let client = HttpClient::with_connector(connector);
-        Client {
-            client: client,
-            key: key.to_owned(),
-        }
+        Client{client: client, key: key.into()}
+    }
+
+    #[cfg(feature = "with-openssl")]
+    pub fn new<Str: Into<String>>(key: Str) -> Client {
+        use hyper_openssl::OpensslClient;
+
+        let tls = OpensslClient::new().unwrap();
+        let connector = HttpsConnector::new(tls);
+        let client = HttpClient::with_connector(connector);
+        Client{client: client, key: key.into()}
     }
 
     pub fn get<'a, T: serde::de::DeserializeOwned>(&'a self, path: &'a str, params: &mut Params<'a>) -> Result<T, Error> {

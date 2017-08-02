@@ -10,13 +10,16 @@ documentation = "https://docs.rs/bingmaps-rs"
 keywords = ["bing", "maps", "microsoft", "geocoding", "api"]
 categories = ["api-bindings"]
 
-[lib]
-name = "bingmaps"
+[features]
+default = ["with-rustls"]
+with-rustls = ["hyper-rustls"]
+with-openssl = ["hyper-openssl"]
 
 [dependencies]
-hyper = "^0.11"
-hyper-openssl = "^0.3"
+hyper = "^0.10"
+hyper-rustls = { version = "^0.6", optional = true }
+hyper-openssl = { version = "^0.2", optional = true }
 serde = "^1.0"
 serde_derive = "^1.0"
 serde_json = "^1.0"
-serde_qs = "^0.2"
+serde_urlencoded = "^0.5"

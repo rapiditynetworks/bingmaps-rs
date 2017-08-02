@@ -1,6 +1,6 @@
 use hyper;
 use serde_json as json;
-use serde_qs as qs;
+use serde_urlencoded::ser as urlencoded;
 use std::error;
 use std::fmt;
 use std::io;
@@ -68,8 +68,8 @@ impl From<io::Error> for Error {
     }
 }
 
-impl From<qs::Error> for Error {
-    fn from(err: qs::Error) -> Error {
+impl From<urlencoded::Error> for Error {
+    fn from(err: urlencoded::Error) -> Error {
         Error::Conversion(Box::new(err))
     }
 }
